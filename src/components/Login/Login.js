@@ -6,15 +6,13 @@ import withFirebaseAuth from 'react-with-firebase-auth';
 const database = firebase.firestore()
 const firebaseAppAuth = firebase.auth()
 
-
-
 class Login extends React.Component {
   constructor (props){
     super(props);
     this.state = {
         email: "",
         password: "",
-        value:"salão",
+        value:"Salao",
         error: ""
     }
   }
@@ -28,28 +26,22 @@ class Login extends React.Component {
     })
     this.props.history.push(`/Register`)
   }
-
-  signIn = () => {
-    const { email, password } = this.state;
-    console.log(email+ " " +password)
-    console.log(firebaseAppAuth.auth);
   
-    this.props.signInWithEmailAndPassword(email, password)
+  signIn = () => {
+    const { email, password,value } = this.state;
+    this.props.signInWithEmailAndPassword(email, password,value)
       .then(resp => {
         console.log(resp);
         const id = resp.user.uid;
         database.collection("users").doc(id).get()
-          .then((resp) => {
-            const data = resp.data()
-            console.log('data', data)
-            this.props.history.push(`/Register`)
+          .then(() => {
+            this.props.history.push(`/${value}`)
           })
           console.log(resp);
       }).catch((error) => {
         this.setState({
           error: error.message        
         })
-        //console.log(error);
       })
   }
 
@@ -62,7 +54,6 @@ class Login extends React.Component {
      render(){
         return(
         <div>
-     
         <h1>Login</h1>
         <label>Digite seu username:</label>
         <Input value = {this.state.email} onChange={(e) => this.handleChange(e,"email")}
@@ -78,15 +69,11 @@ class Login extends React.Component {
         <br/>
         <br/>
         <select value = {this.state.value} onChange={(e) => this.handleChange(e, "value")} >
-            <option value="salão">Salão</option>
+            <option value="Salao">Salão</option>
             <option value="cozinha">Cozinha</option>
         </select>
-       
         <Button className="button" onClick={() => this.signIn()} text="Login" /> 
-        
         <Button className="button" onClick ={this.setRedirect} text ="Cadastrar"></Button>
-       
-        
       </div>
     );
 }
